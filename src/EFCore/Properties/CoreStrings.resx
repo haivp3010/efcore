@@ -1182,6 +1182,10 @@
     <value>A string value was read from JSON for enum '{enumType}'. Starting with EF Core 8, a breaking change was made to store enum values in JSON as numbers by default. See https://aka.ms/efcore-docs-jsonenums for details.</value>
     <comment>Warning CoreEventId.StringEnumValueInJson string</comment>
   </data>
+  <data name="LogMultipleReferenceNavigationPropertiesInOneToOneRelationship" xml:space="preserve">
+    <value>In a query, '{dependentType}.{navigation}' was set to null for {dependentCount} entities with different foreign key values pointing to the same '{principalType}' instance. The database contains data that violates the one-to-one relationship constraint. Review your data model and database schema to ensure the relationship is configured correctly.</value>
+    <comment>Warning CoreEventId.MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning string string string int</comment>
+  </data>
   <data name="LogTempValueGenerated" xml:space="preserve">
     <value>'{contextType}' generated a temporary value for the property '{entityType}.{property}'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.</value>
     <comment>Debug CoreEventId.ValueGenerated string string string</comment>

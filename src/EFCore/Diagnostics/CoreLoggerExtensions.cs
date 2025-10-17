@@ -2834,6 +2834,55 @@ public static class CoreLoggerExtensions
     }
 
     /// <summary>
+    ///     Logs for the <see cref="CoreEventId.MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning" /> event.
+    /// </summary>
+    /// <param name="diagnostics">The diagnostics logger to use.</param>
+    /// <param name="navigation">The navigation property.</param>
+    /// <param name="principalEntityType">The principal entity type.</param>
+    /// <param name="dependentCount">The number of dependent entities found.</param>
+    public static void MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning(
+        this IDiagnosticsLogger<DbLoggerCategory.Query> diagnostics,
+        INavigationBase navigation,
+        IEntityType principalEntityType,
+        int dependentCount)
+    {
+        var definition = CoreResources.LogMultipleReferenceNavigationPropertiesInOneToOneRelationship(diagnostics);
+
+        if (diagnostics.ShouldLog(definition))
+        {
+            definition.Log(
+                diagnostics,
+                navigation.DeclaringEntityType.ShortName(),
+                navigation.Name,
+                principalEntityType.ShortName(),
+                dependentCount);
+        }
+
+        if (diagnostics.NeedsEventData(definition, out var diagnosticSourceEnabled, out var simpleLogEnabled))
+        {
+            var eventData = new MultipleReferenceNavigationWarningEventData(
+                definition,
+                MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning,
+                navigation,
+                principalEntityType,
+                dependentCount);
+
+            diagnostics.DispatchEventData(definition, eventData, diagnosticSourceEnabled, simpleLogEnabled);
+        }
+    }
+
+    private static string MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning(EventDefinitionBase definition, EventData payload)
+    {
+        var d = (EventDefinition<string, string, string, int>)definition;
+        var p = (MultipleReferenceNavigationWarningEventData)payload;
+        return d.GenerateMessage(
+            p.Navigation.DeclaringEntityType.ShortName(),
+            p.Navigation.Name,
+            p.PrincipalEntityType.ShortName(),
+            p.DependentCount);
+    }
+
+    /// <summary>
     ///     Logs for the <see cref="CoreEventId.StartedTracking" /> event.
     /// </summary>
     /// <param name="diagnostics">The diagnostics logger to use.</param>
