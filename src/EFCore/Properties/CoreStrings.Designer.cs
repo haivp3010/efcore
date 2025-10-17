@@ -5500,6 +5500,31 @@ namespace Microsoft.EntityFrameworkCore.Diagnostics.Internal
         }
 
         /// <summary>
+        ///     In a query, '{dependentType}.{navigation}' was set to null for {dependentCount} entities with different foreign key values pointing to the same '{principalType}' instance. The database contains data that violates the one-to-one relationship constraint. Review your data model and database schema to ensure the relationship is configured correctly.
+        /// </summary>
+        public static EventDefinition<string, string, string, int> LogMultipleReferenceNavigationPropertiesInOneToOneRelationship(IDiagnosticsLogger logger)
+        {
+            var definition = ((LoggingDefinitions)logger.Definitions).LogMultipleReferenceNavigationPropertiesInOneToOneRelationship;
+            if (definition == null)
+            {
+                definition = NonCapturingLazyInitializer.EnsureInitialized(
+                    ref ((LoggingDefinitions)logger.Definitions).LogMultipleReferenceNavigationPropertiesInOneToOneRelationship,
+                    logger,
+                    static logger => new EventDefinition<string, string, string, int>(
+                        logger.Options,
+                        CoreEventId.MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning,
+                        LogLevel.Warning,
+                        "CoreEventId.MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning",
+                        level => LoggerMessage.Define<string, string, string, int>(
+                            level,
+                            CoreEventId.MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning,
+                            _resourceManager.GetString("LogMultipleReferenceNavigationPropertiesInOneToOneRelationship")!)));
+            }
+
+            return (EventDefinition<string, string, string, int>)definition;
+        }
+
+        /// <summary>
         ///     '{contextType}' generated a temporary value for the property '{entityType}.{property}'. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
         /// </summary>
         public static EventDefinition<string, string, string> LogTempValueGenerated(IDiagnosticsLogger logger)

@@ -776,9 +776,12 @@ public class NavigationFixer : INavigationFixer
                 var dependents = stateManager.GetDependents(entry, foreignKey);
                 if (foreignKey.IsUnique)
                 {
-                    var dependentEntry = (InternalEntityEntry?)dependents.FirstOrDefault();
-                    if (dependentEntry != null
-                        && dependentEntry.EntityState != EntityState.Deleted)
+                    var dependentsList = dependents.Cast<InternalEntityEntry>()
+                        .Where(e => e.EntityState != EntityState.Deleted)
+                        .ToList();
+                    
+                    var dependentEntry = dependentsList.FirstOrDefault();
+                    if (dependentEntry != null)
                     {
                         var toDependent = foreignKey.PrincipalToDependent;
                         if (CanOverrideCurrentValue(entry, toDependent, dependentEntry, fromQuery)
@@ -787,6 +790,23 @@ public class NavigationFixer : INavigationFixer
                         {
                             SetNavigation(entry, toDependent, dependentEntry, fromQuery);
                             SetNavigation(dependentEntry, foreignKey.DependentToPrincipal, entry, fromQuery);
+                        }
+
+                        // Check if there are multiple dependents for this unique foreign key
+                        if (fromQuery && dependentsList.Count > 1)
+                        {
+                            var dependentToPrincipal = foreignKey.DependentToPrincipal;
+                            if (dependentToPrincipal != null)
+                            {
+                                var queryLogger = stateManager.Context.GetService<IDiagnosticsLogger<DbLoggerCategory.Query>>();
+                                if (queryLogger != null)
+                                {
+                                    queryLogger.MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning(
+                                        dependentToPrincipal,
+                                        entry.EntityType,
+                                        dependentsList.Count);
+                                }
+                            }
                         }
                     }
                 }

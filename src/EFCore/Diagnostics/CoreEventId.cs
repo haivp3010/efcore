@@ -76,6 +76,7 @@ public static class CoreEventId
         DistinctAfterOrderByWithoutRowLimitingOperatorWarning,
         QueryCanceled,
         StringEnumValueInJson,
+        MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning,
 
         // Infrastructure events
         SensitiveDataLoggingEnabledWarning = CoreBaseId + 400,
@@ -342,6 +343,21 @@ public static class CoreEventId
     /// </remarks>
     public static readonly EventId StringEnumValueInJson
         = MakeQueryId(Id.StringEnumValueInJson);
+
+    /// <summary>
+    ///     Multiple entities were found in a query result that share the same foreign key value
+    ///     in a one-to-one relationship, causing some navigation properties to be null.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         This event is in the <see cref="DbLoggerCategory.Query" /> category.
+    ///     </para>
+    ///     <para>
+    ///         This event uses the <see cref="MultipleReferenceNavigationWarningEventData" /> payload when used with a <see cref="DiagnosticSource" />.
+    ///     </para>
+    /// </remarks>
+    public static readonly EventId MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning
+        = MakeQueryId(Id.MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning);
 
     private static readonly string _infraPrefix = DbLoggerCategory.Infrastructure.Name + ".";
 
