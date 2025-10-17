@@ -798,11 +798,14 @@ public class NavigationFixer : INavigationFixer
                             var dependentToPrincipal = foreignKey.DependentToPrincipal;
                             if (dependentToPrincipal != null)
                             {
-                                stateManager.Context.GetService<IDiagnosticsLogger<DbLoggerCategory.Query>>()
-                                    .MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning(
+                                var queryLogger = stateManager.Context.GetService<IDiagnosticsLogger<DbLoggerCategory.Query>>();
+                                if (queryLogger != null)
+                                {
+                                    queryLogger.MultipleReferenceNavigationPropertiesInOneToOneRelationshipWarning(
                                         dependentToPrincipal,
                                         entry.EntityType,
                                         dependentsList.Count);
+                                }
                             }
                         }
                     }

@@ -101,18 +101,20 @@ public class OneToOneConstraintViolationInMemoryTest : IClassFixture<OneToOneCon
         protected override Task SeedAsync(DbContext context)
         {
             var parent = new Parent { Id = 1, Name = "Parent 1" };
-            context.Set<Parent>().Add(parent);
-
+            
             // Add two children pointing to the same parent - this violates the one-to-one constraint
+            // We need to add them without setting the navigation properties to avoid EF detecting the issue during SaveChanges
             var child1 = new Child { Id = 1, Name = "Child 1", ParentId = 1 };
             var child2 = new Child { Id = 2, Name = "Child 2", ParentId = 1 };
+            
+            context.Set<Parent>().Add(parent);
             context.Set<Child>().AddRange(child1, child2);
 
             // Add valid one-to-one data
             var validParent = new ValidParent { Id = 1, Name = "Valid Parent 1" };
-            context.Set<ValidParent>().Add(validParent);
-
             var validChild = new ValidChild { Id = 1, Name = "Valid Child 1", ParentId = 1 };
+            
+            context.Set<ValidParent>().Add(validParent);
             context.Set<ValidChild>().Add(validChild);
 
             return context.SaveChangesAsync();
